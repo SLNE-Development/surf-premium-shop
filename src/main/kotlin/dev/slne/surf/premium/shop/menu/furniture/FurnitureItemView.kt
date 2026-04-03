@@ -5,6 +5,7 @@ import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
 import dev.slne.surf.surfapi.bukkit.api.builder.buildLore
 import dev.slne.surf.surfapi.bukkit.api.builder.displayName
 import dev.slne.surf.surfapi.bukkit.api.inventory.framework.dsl.onItemClick
+import dev.slne.surf.surfapi.bukkit.api.inventory.framework.dsl.openForPlayer
 import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.*
 import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.container.dsl.header
 import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.pagination.pagination
@@ -12,7 +13,6 @@ import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.settings.Pagina
 import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.state.get
 import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.state.initialState
 import dev.slne.surf.surfapi.core.api.messages.adventure.plain
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 val furnitureItemView = paginatedSurfView("...") {
     val categoryStateHandle = initialState<FurnitureCategory>()
@@ -42,19 +42,7 @@ val furnitureItemView = paginatedSurfView("...") {
                     }
                 }
             }).onItemClick {
-                player.inventory.addItem(item.itemStack.clone())
-
-                // TODO: Remove currency via transaction api
-
-                player.sendText {
-                    appendSuccessPrefix()
-                    success("Du hast ")
-                    append(item)
-                    success(" erfolgreich für ")
-                    // TODO Add transaction api to retrieve correct currency display
-                    variableValue("${item.price} CC")
-                    success(" erworben!")
-                }
+                openForPlayer(furnitureItemBuyView, item)
             }
         }
     }

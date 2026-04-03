@@ -1,6 +1,9 @@
+@file:Suppress("UnstableApiUsage")
+
 package dev.slne.surf.premium.shop.furniture.category
 
 import dev.slne.surf.premium.shop.furniture.item.FurnitureItem
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.key
 import kotlinx.serialization.Transient
 import net.kyori.adventure.text.Component
@@ -19,7 +22,7 @@ data class FurnitureCategory(
     val items: MutableList<FurnitureItem> = mutableListOf(),
     var enabled: Boolean = true,
 ) : ComponentLike, Comparable<FurnitureCategory> {
-    override fun asComponent() = displayName
+    override fun asComponent() = displayName.colorIfAbsent(Colors.VARIABLE_VALUE)
 
     @Transient
     val displayItemType = Registry.ITEM.get(key(displayItemKey)) ?: ItemType.STONE

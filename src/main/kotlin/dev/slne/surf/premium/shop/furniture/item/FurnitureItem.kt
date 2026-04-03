@@ -1,5 +1,6 @@
 package dev.slne.surf.premium.shop.furniture.item
 
+import dev.slne.surf.surfapi.core.api.messages.Colors
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.ComponentLike
 import org.bukkit.Material
@@ -15,7 +16,7 @@ data class FurnitureItem(
     val price: Int = 0,
     var enabled: Boolean = true,
 ) : ComponentLike, Comparable<FurnitureItem> {
-    override fun asComponent() = displayName
+    override fun asComponent() = displayName.colorIfAbsent(Colors.VARIABLE_VALUE)
 
     override fun compareTo(other: FurnitureItem): Int {
         return sortingIndex.compareTo(other.sortingIndex)
