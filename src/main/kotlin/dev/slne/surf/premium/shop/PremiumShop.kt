@@ -2,6 +2,7 @@ package dev.slne.surf.premium.shop
 
 import com.github.shynixn.mccoroutine.folia.SuspendingJavaPlugin
 import dev.slne.surf.premium.shop.command.premiumShopCommand
+import dev.slne.surf.premium.shop.menu.furniture.furnitureItemView
 import dev.slne.surf.premium.shop.menu.furniture.furnitureShopView
 import dev.slne.surf.premium.shop.menu.mainMenu
 import dev.slne.surf.surfapi.bukkit.api.inventory.framework.register
@@ -11,6 +12,7 @@ class PremiumShop : SuspendingJavaPlugin() {
     override suspend fun onLoadAsync() {
         mainMenu.register()
         furnitureShopView.register()
+        furnitureItemView.register()
     }
 
     override suspend fun onEnableAsync() {

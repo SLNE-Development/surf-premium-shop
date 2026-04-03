@@ -5,13 +5,12 @@ import dev.slne.surf.premium.shop.menu.ShopView
 import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
 import dev.slne.surf.surfapi.bukkit.api.builder.displayName
 import dev.slne.surf.surfapi.bukkit.api.inventory.framework.dsl.onItemClick
+import dev.slne.surf.surfapi.bukkit.api.inventory.framework.dsl.openForPlayer
 import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.layoutTarget
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.onFirstRender
 import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.paginatedSurfView
 import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.pagination.pagination
 import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.settings
 import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.settings.PaginationViewRows
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 object FurnitureShopView : ShopView(
     itemDisplayName = {
@@ -38,9 +37,7 @@ object FurnitureShopView : ShopView(
                 builder.withItem(buildItem(category.displayItemType) {
                     displayName(category.displayName)
                 }).onItemClick {
-                    player.sendText {
-                        success("Clicked on ${category.name}")
-                    }
+                    openForPlayer(furnitureItemView, category)
                 }
             }
         }
@@ -49,10 +46,6 @@ object FurnitureShopView : ShopView(
 
         settings {
             paginationViewRows(PaginationViewRows.THREE)
-        }
-
-        onFirstRender {
-
         }
     }
 }
