@@ -33,7 +33,7 @@ import org.bukkit.Sound as BukkitSound
 
 val furnitureItemBuyView = surfView("KAUFEN") {
     val itemStateHolder = initialState<FurnitureItem>()
-    val amountStateHolder = mutableState(0)
+    val amountStateHolder = mutableState(1)
 
     settings {
         rows(ViewRows.TWO)
