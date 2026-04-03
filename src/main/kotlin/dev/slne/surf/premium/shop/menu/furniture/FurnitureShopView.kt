@@ -90,7 +90,7 @@ object FurnitureShopView : ShopView(
                         spacer(" auf dem Discord, sodass wir uns")
                     }
                     line {
-                        spacer("diese ansehen können und entscheiden,")
+                        spacer("jene ansehen können und entscheiden,")
                     }
                     line {
                         spacer("ob diese es auf den Server schafft!")
