@@ -13,6 +13,7 @@ import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.settings.Pagina
 import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.state.get
 import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.state.initialState
 import dev.slne.surf.surfapi.core.api.messages.adventure.plain
+import dev.slne.surf.transaction.api.currency.Currency
 
 val furnitureItemView = paginatedSurfView("...") {
     val categoryStateHandle = initialState<FurnitureCategory>()
@@ -39,8 +40,7 @@ val furnitureItemView = paginatedSurfView("...") {
                     emptyLine()
                     line {
                         variableKey("Preis: ")
-                        // TODO Add transaction api to retrieve correct currency display
-                        variableValue("${item.price} CC")
+                        append(Currency.default().format(item.price.toBigDecimal()))
                     }
                 }
             }).onItemClick {

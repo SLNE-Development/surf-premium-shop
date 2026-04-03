@@ -21,7 +21,12 @@ import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.state.mutableSt
 import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.state.set
 import dev.slne.surf.surfapi.core.api.messages.adventure.playSound
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import dev.slne.surf.transaction.api.currency.Currency
+import dev.slne.surf.transaction.api.transaction.TransactionResult
+import dev.slne.surf.transaction.api.transaction.data.TransactionData
+import dev.slne.surf.transaction.api.user.transactionUser
 import io.papermc.paper.datacomponent.DataComponentTypes
+import kotlinx.coroutines.withContext
 import net.kyori.adventure.sound.Sound
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Item
@@ -135,8 +140,7 @@ val furnitureItemBuyView = surfView("KAUFEN") {
                         appendSpace()
                         append(item)
                         spacer(" für ")
-                        // TODO: Add transaction currency display
-                        variableValue("$price CC")
+                        append(Currency.default().format(price.toBigDecimal()))
                         spacer(" zu kaufen")
                     }
                 }
@@ -145,49 +149,80 @@ val furnitureItemBuyView = surfView("KAUFEN") {
             val amount = amountStateHolder[this]
             val price = item.price * amount
 
-            closeForPlayer()
+            plugin.launch {
+                val result = player.transactionUser().withdraw(
+                    amount = price.toBigDecimal(),
+                    currency = Currency.default(),
+                    additionalData = arrayOf(
+                        TransactionData.of(
+                            "premium-furniture-item",
+                            "${amount}x ${item.name} for ${item.price}"
+                        )
+                    )
+                )
 
-            // Try to remove money from the player via transaction api
+                if (result.success) {
+                    closeForPlayer()
+                    
+                    val stacks = splitIntoMultipleItemStacks(item.itemStack, amount)
+                    val notAdded = stacks.flatMap { stack ->
+                        player.inventory.addItem(stack).values
+                    }
 
-            val stacks = splitIntoMultipleItemStacks(item.itemStack, amount)
-            val notAdded = stacks.flatMap { stack ->
-                player.inventory.addItem(stack).values
-            }
+                    withContext(plugin.regionDispatcher(player.location)) {
+                        notAdded.forEach { itemStack ->
+                            player.world.spawnEntity(
+                                player.location,
+                                EntityType.ITEM,
+                                CreatureSpawnEvent.SpawnReason.CUSTOM
+                            ) { item ->
+                                require(item is Item)
 
-            plugin.launch(plugin.regionDispatcher(player.location)) {
-                notAdded.forEach { itemStack ->
-                    player.world.spawnEntity(
-                        player.location,
-                        EntityType.ITEM,
-                        CreatureSpawnEvent.SpawnReason.CUSTOM
-                    ) { item ->
-                        require(item is Item)
+                                item.itemStack = itemStack
+                                item.owner = player.uniqueId
+                                item.pickupDelay = 0
 
-                        item.itemStack = itemStack
-                        item.owner = player.uniqueId
-                        item.pickupDelay = 0
+                                // 5 minutes - 30 seconds so it despawns after 30 seconds
+                                item.ticksLived = 6000 - 600
+                            }
+                        }
+                    }
 
-                        // 5 minutes - 30 seconds so it despawns after 30 seconds
-                        item.ticksLived = 6000 - 600
+                    player.playSound(true) {
+                        type(BukkitSound.ENTITY_PLAYER_LEVELUP)
+                        volume(.5f)
+                        source(Sound.Source.PLAYER)
+                    }
+
+                    player.sendText {
+                        appendSuccessPrefix()
+                        success("Du hast ")
+                        variableValue("${amount}x")
+                        append(item)
+                        success(" für ")
+                        append(Currency.default().format(price.toBigDecimal()))
+                        success(" gekauft!")
+                    }
+                } else if (result is TransactionResult.ReceiverInsufficientFunds) {
+                    player.playSound {
+                        type(BukkitSound.ENTITY_VILLAGER_NO)
+                        volume(.5f)
+                        source(Sound.Source.PLAYER)
+                    }
+
+                    player.sendText {
+                        appendErrorPrefix()
+                        error("Du hast nicht genügend ")
+                        append(Currency.default().displayName)
+                        error(" um ")
+                        variableValue("${amount}x")
+                        appendSpace()
+                        append(item)
+                        success(" für ")
+                        append(Currency.default().format(price.toBigDecimal()))
+                        error(" zu kaufen!")
                     }
                 }
-            }
-
-            player.playSound(true) {
-                type(BukkitSound.ENTITY_PLAYER_LEVELUP)
-                volume(.5f)
-                source(Sound.Source.PLAYER)
-            }
-
-            player.sendText {
-                appendSuccessPrefix()
-                success("Du hast ")
-                variableValue("${amount}x")
-                append(item)
-                success(" für ")
-                // TODO: Add transaction currency display
-                variableValue("$price CC")
-                success(" gekauft!")
             }
         }
     }
