@@ -7,7 +7,6 @@ import dev.slne.surf.premium.shop.config.PremiumShopConfig
 import dev.slne.surf.premium.shop.furniture.category.FurnitureCategory
 import dev.slne.surf.premium.shop.furniture.item.FurnitureItem
 import dev.slne.surf.premium.shop.utils.PermissionRegistry
-import dev.slne.surf.surfapi.bukkit.api.command.args.miniMessageArgument
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import net.kyori.adventure.text.Component
 
@@ -16,14 +15,12 @@ fun CommandAPICommand.itemAddCommand() = subcommand("add") {
 
     furnitureCategoryArgument("category")
     stringArgument("name")
-    miniMessageArgument("displayName")
     integerArgument("price")
     booleanArgument("enabled", optional = true)
 
     playerExecutor { player, arguments ->
         val category: FurnitureCategory by arguments
         val name: String by arguments
-        val displayName: Component by arguments
         val price: Int by arguments
         val enabled = arguments.getOrDefaultUnchecked("enabled", true)
 
@@ -52,7 +49,8 @@ fun CommandAPICommand.itemAddCommand() = subcommand("add") {
             return@playerExecutor
         }
 
-        val latestSortingIndex = category.items.maxOf { it.sortingIndex }
+        val displayName = itemStack.itemMeta?.displayName() ?: Component.text(name)
+        val latestSortingIndex = category.items.maxOfOrNull { it.sortingIndex } ?: 0
 
         val item = FurnitureItem(
             name = name,

@@ -7,9 +7,10 @@ import org.spongepowered.configurate.objectmapping.ConfigSerializable
 
 @ConfigSerializable
 data class PremiumShopConfig(
-    var enabled: Boolean,
-    val furnitureShopCategories: MutableList<FurnitureCategory>
+    var enabled: Boolean = true,
+    val furnitureShopCategories: MutableList<FurnitureCategory> = mutableListOf()
 ) {
+
     fun addFurnitureCategory(category: FurnitureCategory) {
         furnitureShopCategories.add(category)
     }

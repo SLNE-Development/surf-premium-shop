@@ -48,12 +48,12 @@ fun CommandAPICommand.categoriesCreateCommand() = subcommand("create") {
             return@playerExecutor
         }
 
-        val latestSortingIndex = config.furnitureShopCategories.maxOf { it.sortingIndex }
+        val latestSortingIndex = config.furnitureShopCategories.maxOfOrNull { it.sortingIndex } ?: 0
 
         val category = FurnitureCategory(
             name = name,
             displayName = displayName,
-            displayItem = displayItem,
+            displayItemKey = displayItem.type.key().asString(),
             items = LinkedList(),
             enabled = enabled,
             sortingIndex = latestSortingIndex + 1
