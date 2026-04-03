@@ -2,6 +2,7 @@
 
 package dev.slne.surf.premium.shop.menu.furniture
 
+import com.github.shynixn.mccoroutine.folia.entityDispatcher
 import com.github.shynixn.mccoroutine.folia.launch
 import com.github.shynixn.mccoroutine.folia.regionDispatcher
 import dev.slne.surf.premium.shop.furniture.item.FurnitureItem
@@ -162,8 +163,10 @@ val furnitureItemBuyView = surfView("KAUFEN") {
                 )
 
                 if (result.success) {
-                    closeForPlayer()
-                    
+                    withContext(plugin.entityDispatcher(player)) {
+                        closeForPlayer()
+                    }
+
                     val stacks = splitIntoMultipleItemStacks(item.itemStack, amount)
                     val notAdded = stacks.flatMap { stack ->
                         player.inventory.addItem(stack).values
