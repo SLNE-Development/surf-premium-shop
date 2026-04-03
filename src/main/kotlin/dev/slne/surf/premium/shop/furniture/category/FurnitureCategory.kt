@@ -2,7 +2,8 @@
 
 package dev.slne.surf.premium.shop.furniture.category
 
-import dev.slne.surf.premium.shop.furniture.item.FurnitureItem
+import dev.slne.surf.premium.shop.config.config
+import dev.slne.surf.premium.shop.utils.PermissionRegistry
 import dev.slne.surf.surfapi.core.api.messages.Colors
 import dev.slne.surf.surfapi.core.api.messages.adventure.key
 import kotlinx.serialization.Transient
@@ -19,10 +20,13 @@ data class FurnitureCategory(
     val sortingIndex: Int = 0,
     val displayName: Component = Component.empty(),
     val displayItemKey: String = Material.STONE.key().asString(),
-    val items: MutableList<FurnitureItem> = mutableListOf(),
+    val permission: String = PermissionRegistry.createCategoryUsePermission(name),
     var enabled: Boolean = true,
 ) : ComponentLike, Comparable<FurnitureCategory> {
     override fun asComponent() = displayName.colorIfAbsent(Colors.VARIABLE_VALUE)
+
+    @Transient
+    val items get() = config.furniture.itemsByCategoryName(name)
 
     @Transient
     val displayItemType = Registry.ITEM.get(key(displayItemKey)) ?: ItemType.STONE

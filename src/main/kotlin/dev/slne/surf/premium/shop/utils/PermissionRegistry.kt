@@ -22,4 +22,21 @@ object PermissionRegistry : PermissionRegistry() {
     val COMMAND_FURNITURE_CATEGORY_ADD_ITEM = create("$COMMAND_FURNITURE_CATEGORY_PREFIX.add-item")
     val COMMAND_FURNITURE_CATEGORY_REMOVE_ITEM =
         create("$COMMAND_FURNITURE_CATEGORY_PREFIX.remove-item")
+
+    private const val FURNITURE_PREFIX = "$PREFIX.furniture"
+    const val FURNITURE_CATEGORY_USE_BASE = "$FURNITURE_PREFIX.category.use"
+
+    private fun slug(name: String) = name.lowercase()
+        .replace(" ", "-")
+        .replace("_", "-")
+        .replace("ä", "ae")
+        .replace("ö", "oe")
+        .replace("ü", "ue")
+        .replace("ß", "ss")
+
+    fun createCategoryUsePermission(name: String) =
+        create(slug("$FURNITURE_CATEGORY_USE_BASE.$name"))
+
+    fun createFurnitureItemUsePermission(categoryName: String, name: String) =
+        create(slug("$FURNITURE_CATEGORY_USE_BASE.$categoryName.item.$name"))
 }

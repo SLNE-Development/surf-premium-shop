@@ -30,7 +30,7 @@ fun CommandAPICommand.categoriesDeleteCommand() = subcommand("delete") {
                 error("HIER", TextDecoration.BOLD)
                 clickCallback { clicker ->
                     PremiumShopConfig.edit {
-                        removeFurnitureCategory(category)
+                        furniture.removeCategory(category)
                     }
 
                     clicker.sendText {

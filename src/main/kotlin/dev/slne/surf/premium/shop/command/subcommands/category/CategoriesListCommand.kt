@@ -26,6 +26,6 @@ fun CommandAPICommand.categoriesListCommand() = subcommand("list") {
     withPermission(PermissionRegistry.COMMAND_FURNITURE_CATEGORY_LIST)
 
     anyExecutor { sender, _ ->
-        sender.sendMessage(pagination.renderComponent(config.furnitureShopCategories))
+        sender.sendMessage(pagination.renderComponent(config.furniture.categories))
     }
 }

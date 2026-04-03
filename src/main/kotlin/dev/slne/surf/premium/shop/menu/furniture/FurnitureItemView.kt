@@ -24,10 +24,12 @@ val furnitureItemView = paginatedSurfView("...") {
     }
 
     pagination {
-        lazySource {
-            val categoryState = categoryStateHandle[it]
+        lazySource { context ->
+            val categoryState = categoryStateHandle[context]
 
             categoryState.items
+                .filter { it.enabled }
+                .filter { context.player.hasPermission(it.permission) }
         }
 
         elementFactory { _, builder, _, item ->

@@ -33,9 +33,10 @@ object FurnitureShopView : ShopView(
 ) {
     override fun buildView() = paginatedSurfView("Furniture") {
         pagination {
-            lazySource {
-                config.furnitureShopCategories
+            lazySource { context ->
+                config.furniture.categories
                     .filter { it.enabled }
+                    .filter { context.player.hasPermission(it.permission) }
                     .sortedBy { it.sortingIndex }
             }
             elementFactory { _, builder, _, category ->
@@ -73,7 +74,6 @@ object FurnitureShopView : ShopView(
                         variableValue("Nexo")
                         spacer(", um Furniture anzuzeigen.")
                     }
-//                    emptyLine()
                     line {
                         spacer("Daher können wir nur Models anbieten, welche Configs")
                     }

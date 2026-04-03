@@ -58,11 +58,12 @@ fun CommandAPICommand.itemAddCommand() = subcommand("add") {
             price = price,
             itemStack = itemStack.clone(),
             enabled = enabled,
-            sortingIndex = latestSortingIndex + 1
+            sortingIndex = latestSortingIndex + 1,
+            categoryName = category.name
         )
 
         PremiumShopConfig.edit {
-            furnitureCategoryByName(category.name)?.items?.add(item)
+            furniture.items.add(item)
         }
 
         player.sendText {

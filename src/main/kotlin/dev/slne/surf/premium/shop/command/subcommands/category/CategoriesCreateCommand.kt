@@ -10,7 +10,6 @@ import dev.slne.surf.surfapi.bukkit.api.command.args.miniMessageArgument
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
-import java.util.*
 
 fun CommandAPICommand.categoriesCreateCommand() = subcommand("create") {
     withPermission(PermissionRegistry.COMMAND_FURNITURE_CATEGORY_CREATE)
@@ -24,7 +23,7 @@ fun CommandAPICommand.categoriesCreateCommand() = subcommand("create") {
         val displayName: Component by arguments
         val enabled = arguments.getOrDefaultUnchecked("enabled", true)
 
-        if (config.furnitureCategoryByName(name) != null) {
+        if (config.furniture.categoryByName(name) != null) {
             player.sendText {
                 appendErrorPrefix()
 
@@ -48,19 +47,18 @@ fun CommandAPICommand.categoriesCreateCommand() = subcommand("create") {
             return@playerExecutor
         }
 
-        val latestSortingIndex = config.furnitureShopCategories.maxOfOrNull { it.sortingIndex } ?: 0
+        val latestSortingIndex = config.furniture.categories.maxOfOrNull { it.sortingIndex } ?: -1
 
         val category = FurnitureCategory(
             name = name,
             displayName = displayName,
             displayItemKey = displayItem.type.key().asString(),
-            items = LinkedList(),
             enabled = enabled,
             sortingIndex = latestSortingIndex + 1
         )
 
         PremiumShopConfig.edit {
-            addFurnitureCategory(category)
+            furniture.addCategory(category)
         }
 
         player.sendText {

@@ -6,7 +6,7 @@ import dev.jorel.commandapi.arguments.Argument
 import dev.jorel.commandapi.arguments.ArgumentSuggestions
 import dev.jorel.commandapi.arguments.CustomArgument
 import dev.jorel.commandapi.arguments.StringArgument
-import dev.slne.surf.premium.shop.config.PremiumShopConfig
+import dev.slne.surf.premium.shop.config.config
 import dev.slne.surf.premium.shop.furniture.category.FurnitureCategory
 
 class FurnitureCategoryArgument(
@@ -15,23 +15,13 @@ class FurnitureCategoryArgument(
     StringArgument(nodeName),
     { info ->
         val input = info.input
-        val category = PremiumShopConfig.getConfig().furnitureShopCategories.firstOrNull {
-            it.name.equals(
-                input,
-                ignoreCase = true
-            )
-        }
-
-        if (category == null) {
-            throw CommandAPI.failWithString("Category '$input' not found.")
-        }
-
-        category
+        config.furniture.categoryByName(input)
+            ?: throw CommandAPI.failWithString("Category '$input' not found.")
     }
 ) {
     init {
         replaceSuggestions(ArgumentSuggestions.stringCollection { _ ->
-            return@stringCollection PremiumShopConfig.getConfig().furnitureShopCategories.map { it.name }
+            return@stringCollection config.furniture.categories.map(FurnitureCategory::name)
         })
     }
 }
