@@ -1,34 +1,39 @@
-package dev.slne.surf.premium.shop.command.subcommands.category
+package dev.slne.surf.premium.shop.command.subcommands.category.item
 
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.*
+import dev.slne.surf.premium.shop.command.subcommands.category.arguments.furnitureCategoryArgument
 import dev.slne.surf.premium.shop.config.PremiumShopConfig
-import dev.slne.surf.premium.shop.config.config
 import dev.slne.surf.premium.shop.furniture.category.FurnitureCategory
+import dev.slne.surf.premium.shop.furniture.item.FurnitureItem
 import dev.slne.surf.premium.shop.utils.PermissionRegistry
 import dev.slne.surf.surfapi.bukkit.api.command.args.miniMessageArgument
 import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import net.kyori.adventure.text.Component
-import org.bukkit.Material
-import java.util.*
 
-fun CommandAPICommand.categoriesCreateCommand() = subcommand("create") {
-    withPermission(PermissionRegistry.COMMAND_FURNITURE_CATEGORY_CREATE)
+fun CommandAPICommand.itemAddCommand() = subcommand("add") {
+    withPermission(PermissionRegistry.COMMAND_FURNITURE_CATEGORY_ADD_ITEM)
 
+    furnitureCategoryArgument("category")
     stringArgument("name")
     miniMessageArgument("displayName")
+    integerArgument("price")
     booleanArgument("enabled", optional = true)
 
     playerExecutor { player, arguments ->
+        val category: FurnitureCategory by arguments
         val name: String by arguments
         val displayName: Component by arguments
+        val price: Int by arguments
         val enabled = arguments.getOrDefaultUnchecked("enabled", true)
 
-        if (config.furnitureCategoryByName(name) != null) {
+        if (category.items.any { it.name.equals(name, true) }) {
             player.sendText {
                 appendErrorPrefix()
 
-                error("Es existiert bereits eine Kategorie mit dem Namen ")
+                error("Die Kategorie ")
+                append(category)
+                error(" enthält bereits ein Item mit dem Namen ")
                 variableValue(name)
                 error(".")
             }
@@ -36,39 +41,41 @@ fun CommandAPICommand.categoriesCreateCommand() = subcommand("create") {
             return@playerExecutor
         }
 
-        val displayItem = player.inventory.itemInMainHand
-
-        if (displayItem.type == Material.AIR) {
+        val itemStack = player.inventory.itemInMainHand
+        if (itemStack.type.isAir) {
             player.sendText {
                 appendErrorPrefix()
 
-                error("Du musst ein Item in deiner Main-Hand halten, welches als Displayitem für die Kategorie verwendet wird.")
+                error("Du musst ein Item in der Hand halten, um es hinzuzufügen.")
             }
 
             return@playerExecutor
         }
 
-        val latestSortingIndex = config.furnitureShopCategories.maxOf { it.sortingIndex }
+        val latestSortingIndex = category.items.maxOf { it.sortingIndex }
 
-        val category = FurnitureCategory(
+        val item = FurnitureItem(
             name = name,
             displayName = displayName,
-            displayItem = displayItem,
-            items = LinkedList(),
+            price = price,
+            itemStack = itemStack.clone(),
             enabled = enabled,
             sortingIndex = latestSortingIndex + 1
         )
 
         PremiumShopConfig.edit {
-            addFurnitureCategory(category)
+            furnitureCategoryByName(category.name)?.items?.add(item)
         }
 
         player.sendText {
             appendSuccessPrefix()
 
-            success("Die Kategorie ")
+            success("Das Item ")
+            append(item)
+            success(" wurde zur Kategorie ")
             append(category)
-            success(" wurde erfolgreich erstellt.")
+            success(" hinzugefügt.")
         }
     }
 }
+

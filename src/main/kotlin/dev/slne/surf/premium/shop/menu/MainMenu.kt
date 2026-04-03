@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemType
 val mainMenu = surfView("PremiumShop") {
     settings {
         rows(ViewRows.THREE)
+        navigateBackOnOutsideClick(false)
     }
 
     containerDefaults {

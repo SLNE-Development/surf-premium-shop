@@ -4,12 +4,11 @@ import dev.slne.surf.premium.shop.furniture.category.FurnitureCategory
 import dev.slne.surf.premium.shop.plugin
 import dev.slne.surf.surfapi.core.api.config.SpongeYmlConfigClass
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
-import java.util.*
 
 @ConfigSerializable
 data class PremiumShopConfig(
-    val enabled: Boolean,
-    val furnitureShopCategories: LinkedList<FurnitureCategory>
+    var enabled: Boolean,
+    val furnitureShopCategories: MutableList<FurnitureCategory>
 ) {
     fun addFurnitureCategory(category: FurnitureCategory) {
         furnitureShopCategories.add(category)

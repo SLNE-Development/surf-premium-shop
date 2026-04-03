@@ -2,6 +2,7 @@ package dev.slne.surf.premium.shop.command.subcommands.category
 
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.subcommand
+import dev.slne.surf.premium.shop.command.subcommands.category.item.itemsCommand
 import dev.slne.surf.premium.shop.utils.PermissionRegistry
 
 fun CommandAPICommand.categoriesCommand() = subcommand("category") {
@@ -11,4 +12,5 @@ fun CommandAPICommand.categoriesCommand() = subcommand("category") {
     categoriesInfoCommand()
     categoriesCreateCommand()
     categoriesDeleteCommand()
+    itemsCommand()
 }
