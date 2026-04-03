@@ -73,7 +73,7 @@ object FurnitureShopView : ShopView(
                         variableValue("Nexo")
                         spacer(", um Furniture anzuzeigen.")
                     }
-                    emptyLine()
+//                    emptyLine()
                     line {
                         spacer("Daher können wir nur Models anbieten, welche Configs")
                     }
