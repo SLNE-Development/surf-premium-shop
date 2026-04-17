@@ -1,10 +1,10 @@
-import dev.slne.surf.surfapi.gradle.util.registerRequired
+import dev.slne.surf.api.gradle.util.registerRequired
 
 plugins {
-    id("dev.slne.surf.surfapi.gradle.paper-plugin")
+    id("dev.slne.surf.api.gradle.paper-plugin")
 }
 
-group = "dev.slne.surf"
+group = "dev.slne.surf.premium.shop"
 version = findProperty("version") as String
 
 dependencies {
