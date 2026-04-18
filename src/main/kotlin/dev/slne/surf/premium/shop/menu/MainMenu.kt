@@ -4,13 +4,13 @@ package dev.slne.surf.premium.shop.menu
 
 import dev.slne.surf.premium.shop.menu.furniture.FurnitureShopView
 import dev.slne.surf.premium.shop.menu.furniture.furnitureShopView
-import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
-import dev.slne.surf.surfapi.bukkit.api.builder.displayName
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.dsl.onItemClick
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.dsl.openForPlayer
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.*
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.container.dsl.blockRow
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.settings.ViewRows
+import dev.slne.surf.api.paper.builder.buildItem
+import dev.slne.surf.api.paper.builder.displayName
+import dev.slne.surf.api.paper.inventory.framework.dsl.onItemClick
+import dev.slne.surf.api.paper.inventory.framework.dsl.openForPlayer
+import dev.slne.surf.api.paper.inventory.framework.view.*
+import dev.slne.surf.api.paper.inventory.framework.view.container.dsl.blockRow
+import dev.slne.surf.api.paper.inventory.framework.view.settings.ViewRows
 import org.bukkit.inventory.ItemType
 
 val mainMenu = surfView("PremiumShop") {

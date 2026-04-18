@@ -1,8 +1,8 @@
 package dev.slne.surf.premium.shop.menu
 
-import dev.slne.surf.surfapi.bukkit.api.builder.LoreBuilder
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.AbstractSurfView
-import dev.slne.surf.surfapi.core.api.messages.builder.SurfComponentBuilder
+import dev.slne.surf.api.paper.builder.LoreBuilder
+import dev.slne.surf.api.paper.inventory.framework.view.AbstractSurfView
+import dev.slne.surf.api.core.messages.builder.SurfComponentBuilder
 
 abstract class ShopView(
     itemDisplayName: SurfComponentBuilder.() -> Unit,

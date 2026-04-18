@@ -2,20 +2,20 @@ package dev.slne.surf.premium.shop.menu.furniture
 
 import dev.slne.surf.premium.shop.config.config
 import dev.slne.surf.premium.shop.menu.ShopView
-import dev.slne.surf.surfapi.bukkit.api.builder.buildItem
-import dev.slne.surf.surfapi.bukkit.api.builder.buildLore
-import dev.slne.surf.surfapi.bukkit.api.builder.displayName
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.dsl.onItemClick
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.dsl.openForPlayer
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.icon.ViewIconColor
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.icon.ViewIconType
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.icon.viewIcon
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.layoutTarget
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.onFirstRender
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.paginatedSurfView
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.pagination.pagination
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.settings
-import dev.slne.surf.surfapi.bukkit.api.inventory.framework.view.settings.PaginationViewRows
+import dev.slne.surf.api.paper.builder.buildItem
+import dev.slne.surf.api.paper.builder.buildLore
+import dev.slne.surf.api.paper.builder.displayName
+import dev.slne.surf.api.paper.inventory.framework.dsl.onItemClick
+import dev.slne.surf.api.paper.inventory.framework.dsl.openForPlayer
+import dev.slne.surf.api.paper.inventory.framework.view.icon.ViewIconColor
+import dev.slne.surf.api.paper.inventory.framework.view.icon.ViewIconType
+import dev.slne.surf.api.paper.inventory.framework.view.icon.viewIcon
+import dev.slne.surf.api.paper.inventory.framework.view.layoutTarget
+import dev.slne.surf.api.paper.inventory.framework.view.onFirstRender
+import dev.slne.surf.api.paper.inventory.framework.view.paginatedSurfView
+import dev.slne.surf.api.paper.inventory.framework.view.pagination.pagination
+import dev.slne.surf.api.paper.inventory.framework.view.settings
+import dev.slne.surf.api.paper.inventory.framework.view.settings.PaginationViewRows
 
 object FurnitureShopView : ShopView(
     itemDisplayName = {

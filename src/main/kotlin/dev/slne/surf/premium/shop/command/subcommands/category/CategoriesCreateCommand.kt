@@ -6,8 +6,8 @@ import dev.slne.surf.premium.shop.config.PremiumShopConfig
 import dev.slne.surf.premium.shop.config.config
 import dev.slne.surf.premium.shop.furniture.category.FurnitureCategory
 import dev.slne.surf.premium.shop.utils.PermissionRegistry
-import dev.slne.surf.surfapi.bukkit.api.command.args.miniMessageArgument
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
+import dev.slne.surf.api.paper.command.args.miniMessageArgument
+import dev.slne.surf.api.core.messages.adventure.sendText
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 
