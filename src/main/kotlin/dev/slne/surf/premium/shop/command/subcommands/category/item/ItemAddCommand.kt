@@ -2,12 +2,12 @@ package dev.slne.surf.premium.shop.command.subcommands.category.item
 
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.*
+import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.premium.shop.command.subcommands.category.arguments.furnitureCategoryArgument
 import dev.slne.surf.premium.shop.config.PremiumShopConfig
 import dev.slne.surf.premium.shop.furniture.category.FurnitureCategory
 import dev.slne.surf.premium.shop.furniture.item.FurnitureItem
 import dev.slne.surf.premium.shop.utils.PermissionRegistry
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import net.kyori.adventure.text.Component
 
 fun CommandAPICommand.itemAddCommand() = subcommand("add") {

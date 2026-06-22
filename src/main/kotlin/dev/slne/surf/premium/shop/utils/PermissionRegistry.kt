@@ -1,6 +1,6 @@
 package dev.slne.surf.premium.shop.utils
 
-import dev.slne.surf.surfapi.bukkit.api.permission.PermissionRegistry
+import dev.slne.surf.api.paper.permission.PermissionRegistry
 
 object PermissionRegistry : PermissionRegistry() {
     private const val PREFIX = "surf.premium.shop"

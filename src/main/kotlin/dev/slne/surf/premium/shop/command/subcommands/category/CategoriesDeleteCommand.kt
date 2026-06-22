@@ -4,12 +4,11 @@ import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.anyExecutor
 import dev.jorel.commandapi.kotlindsl.getValue
 import dev.jorel.commandapi.kotlindsl.subcommand
+import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.premium.shop.command.subcommands.category.arguments.furnitureCategoryArgument
 import dev.slne.surf.premium.shop.config.PremiumShopConfig
 import dev.slne.surf.premium.shop.furniture.category.FurnitureCategory
 import dev.slne.surf.premium.shop.utils.PermissionRegistry
-import dev.slne.surf.surfapi.core.api.messages.adventure.clickCallback
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 import net.kyori.adventure.text.format.TextDecoration
 
 fun CommandAPICommand.categoriesDeleteCommand() = subcommand("delete") {

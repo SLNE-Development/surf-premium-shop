@@ -3,11 +3,11 @@ package dev.slne.surf.premium.shop.command.subcommands.category
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.anyExecutor
 import dev.jorel.commandapi.kotlindsl.subcommand
+import dev.slne.surf.api.core.messages.adventure.buildText
+import dev.slne.surf.api.core.messages.pagination.Pagination
 import dev.slne.surf.premium.shop.config.config
 import dev.slne.surf.premium.shop.furniture.category.FurnitureCategory
 import dev.slne.surf.premium.shop.utils.PermissionRegistry
-import dev.slne.surf.surfapi.core.api.messages.adventure.buildText
-import dev.slne.surf.surfapi.core.api.messages.pagination.Pagination
 
 private val pagination = Pagination<FurnitureCategory> {
     title {

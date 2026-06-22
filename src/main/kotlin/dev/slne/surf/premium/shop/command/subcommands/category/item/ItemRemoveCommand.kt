@@ -7,12 +7,12 @@ import dev.jorel.commandapi.kotlindsl.anyExecutor
 import dev.jorel.commandapi.kotlindsl.getValue
 import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.jorel.commandapi.kotlindsl.subcommand
+import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.premium.shop.command.subcommands.category.arguments.furnitureCategoryArgument
 import dev.slne.surf.premium.shop.config.PremiumShopConfig
 import dev.slne.surf.premium.shop.config.config
 import dev.slne.surf.premium.shop.furniture.category.FurnitureCategory
 import dev.slne.surf.premium.shop.utils.PermissionRegistry
-import dev.slne.surf.surfapi.core.api.messages.adventure.sendText
 
 fun CommandAPICommand.itemRemoveCommand() = subcommand("remove") {
     withPermission(PermissionRegistry.COMMAND_FURNITURE_CATEGORY_REMOVE_ITEM)

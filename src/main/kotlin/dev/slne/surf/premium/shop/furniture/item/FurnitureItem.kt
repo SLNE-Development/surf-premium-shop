@@ -1,8 +1,8 @@
 package dev.slne.surf.premium.shop.furniture.item
 
+import dev.slne.surf.api.core.messages.Colors
 import dev.slne.surf.premium.shop.config.config
 import dev.slne.surf.premium.shop.utils.PermissionRegistry
-import dev.slne.surf.surfapi.core.api.messages.Colors
 import kotlinx.serialization.Transient
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.ComponentLike

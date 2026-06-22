@@ -1,5 +1,5 @@
 [versions]
-surf-transaction-api = "1.21.11+"
+surf-transaction-api = "+"
 
 [libraries]
 surf-transaction-api = { module = "dev.slne.surf.transaction:surf-transaction-api", version.ref = "surf-transaction-api" }
