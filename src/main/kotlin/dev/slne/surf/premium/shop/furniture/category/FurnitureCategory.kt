@@ -40,8 +40,9 @@ class FurnitureCategory(
         enabled = enabled,
         sortingIndex = sortingIndex,
         displayName = displayName,
+        displayItem = displayItem,
         permission = permission,
-        items = items.map(FurnitureItem::toConfig)
+        items = items.map(FurnitureItem::toConfig),
     )
 
     companion object {

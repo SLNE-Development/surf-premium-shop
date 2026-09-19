@@ -7,6 +7,7 @@ import dev.slne.surf.premium.shop.menu.furniture.furnitureItemView
 import dev.slne.surf.premium.shop.menu.furniture.furnitureShopView
 import dev.slne.surf.premium.shop.menu.mainMenu
 import dev.slne.surf.api.paper.inventory.framework.register
+import dev.slne.surf.premium.shop.furniture.FurnitureManager
 import org.bukkit.plugin.java.JavaPlugin
 
 class PremiumShop : SuspendingJavaPlugin() {
@@ -18,6 +19,7 @@ class PremiumShop : SuspendingJavaPlugin() {
     }
 
     override suspend fun onEnableAsync() {
+        FurnitureManager.loadFromFile()
         premiumShopCommand()
     }
 

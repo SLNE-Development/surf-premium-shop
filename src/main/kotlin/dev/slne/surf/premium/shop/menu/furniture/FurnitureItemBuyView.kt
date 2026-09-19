@@ -4,10 +4,9 @@ package dev.slne.surf.premium.shop.menu.furniture
 
 import com.github.shynixn.mccoroutine.folia.launch
 import dev.slne.surf.api.core.messages.adventure.playSound
+import dev.slne.surf.api.core.messages.adventure.sendText
 import dev.slne.surf.api.paper.builder.buildLore
 import dev.slne.surf.api.paper.builder.displayName
-import dev.slne.surf.api.paper.dialog.base
-import dev.slne.surf.api.paper.dialog.noticeDialog
 import dev.slne.surf.api.paper.inventory.framework.dsl.layoutSlot
 import dev.slne.surf.api.paper.inventory.framework.dsl.onItemClick
 import dev.slne.surf.api.paper.inventory.framework.dsl.onItemRender
@@ -26,10 +25,43 @@ import dev.slne.surf.premium.shop.furniture.item.FurnitureItem
 import dev.slne.surf.premium.shop.manager.PremiumShopManager
 import dev.slne.surf.premium.shop.plugin
 import dev.slne.surf.transaction.api.currency.Currency
-import io.papermc.paper.registry.data.dialog.DialogBase
 import net.kyori.adventure.sound.Sound
 import org.bukkit.entity.Player
 import kotlin.math.max
+
+private val waitingMessages = listOf(
+    "Dein Einkauf wird gerade zusammengepackt ... hoffentlich fällt nichts runter.",
+    "Die Bestellung ist angekommen! Jetzt muss nur noch jemand das richtige Regal finden.",
+    "Kauf wird verarbeitet ... bitte nicht den Stecker ziehen.",
+    "Bestellung wird bearbeitet ... unser Hamster im Serverraum gibt alles.",
+    "Dein Kauf läuft! Wir zählen gerade noch einmal nach, sicher ist sicher.",
+    "Kauf gestartet ... jetzt bloß nichts explodieren lassen."
+)
+
+private val successMessages = listOf(
+    "Geschafft! Dein Einkauf hat es heil durch die Kasse geschafft.",
+    "Zack, gekauft! Das Lager ist jetzt ein bisschen leerer.",
+    "Kauf abgeschlossen! Niemand wurde dabei verletzt.",
+    "Bestellung erfolgreich! Unser Hamster darf jetzt kurz Pause machen."
+)
+
+private val insufficientFundsMessages = listOf(
+    "Die Kasse hat nachgezählt ... da fehlt leider noch etwas.",
+    "Fast! Dein Geldbeutel ist nur leider anderer Meinung.",
+    "Die Kasse piept. Und diesmal leider nicht vor Freude.",
+    "Das Lager wäre bereit, aber dein Kontostand noch nicht.",
+    "Dein Einkauf wollte schon loslaufen, wurde aber von der Kasse aufgehalten.",
+    "Leider zu teuer. Selbst unser Hamster konnte da nichts mehr machen."
+)
+
+private val errorMessages = listOf(
+    "Da ist uns wohl eine Schraube aus dem Shop gefallen.",
+    "Ups! Dein Einkauf ist irgendwo zwischen Kasse und Lager stecken geblieben.",
+    "Irgendetwas ist schiefgelaufen. Der Hamster bestreitet jede Beteiligung.",
+    "Das war so nicht geplant. Die Technik hatte offenbar andere Ideen.",
+    "Der Shop hat gerade kurz den Faden verloren.",
+    "Da hat es irgendwo geknirscht. Dein Kauf wurde vorsichtshalber nicht abgeschlossen."
+)
 
 val furnitureItemBuyView = surfView("KAUFEN") {
     val itemStateHolder = initialState<FurnitureItem>()
@@ -147,16 +179,10 @@ val furnitureItemBuyView = surfView("KAUFEN") {
 
                 closeForPlayer()
 
-                player.showDialog(
-                    noticeDialog {
-                        base {
-                            afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
-                            preventClosingWithEscape()
-                            title { }
-                        }
-                    }
-                )
-                player.closeDialog()
+                player.sendText {
+                    appendInfoPrefix()
+                    info(waitingMessages.random())
+                }
 
                 plugin.launch {
                     PremiumShopManager.buy(
@@ -164,23 +190,19 @@ val furnitureItemBuyView = surfView("KAUFEN") {
                         amount,
                         item,
                         onSuccess = {
-                            player.showDialog(noticeDialog {
-                                base {
-                                    title {
-                                        success("Erfolgreich gekauft!")
-                                    }
-                                    body {
-                                        plainMessage {
-                                            success("Du hast ")
-                                            variableValue("${amount}x")
-                                            append(item)
-                                            success(" für ")
-                                            append(Currency.default().format(price.toBigDecimal()))
-                                            success(" gekauft!")
-                                        }
-                                    }
-                                }
-                            })
+                            player.sendText {
+                                appendSuccessPrefix()
+                                success(successMessages.random())
+
+                                appendNewSuccessPrefixedLine()
+                                success("Du hast ")
+                                variableValue("${amount}x")
+                                appendSpace()
+                                append(item)
+                                success(" für ")
+                                append(Currency.default().format(price.toBigDecimal()))
+                                success(" gekauft!")
+                            }
 
                             player.playSound(true) {
                                 type(BukkitSound.ENTITY_PLAYER_LEVELUP)
@@ -189,26 +211,21 @@ val furnitureItemBuyView = surfView("KAUFEN") {
                             }
                         },
                         onInsufficientFunds = {
-                            player.showDialog(noticeDialog {
-                                base {
-                                    title {
-                                        warning("Nicht genügend Geld!")
-                                    }
-                                    body {
-                                        plainMessage {
-                                            warning("Du hast nicht genügend ")
-                                            append(Currency.default().displayName)
-                                            warning(" um ")
-                                            variableValue("${amount}x")
-                                            appendSpace()
-                                            append(item)
-                                            warning(" für ")
-                                            append(Currency.default().format(price.toBigDecimal()))
-                                            warning(" zu kaufen!")
-                                        }
-                                    }
-                                }
-                            })
+                            player.sendText {
+                                appendWarningPrefix()
+                                warning(insufficientFundsMessages.random())
+
+                                appendNewWarningPrefixedLine()
+                                warning("Dir fehlen die nötigen ")
+                                append(Currency.default().displayName)
+                                warning(" für ")
+                                variableValue("${amount}x")
+                                appendSpace()
+                                append(item)
+                                warning(" zum Preis von ")
+                                append(Currency.default().format(price.toBigDecimal()))
+                                warning(".")
+                            }
 
                             player.playSound {
                                 type(BukkitSound.ENTITY_VILLAGER_NO)
@@ -217,24 +234,21 @@ val furnitureItemBuyView = surfView("KAUFEN") {
                             }
                         },
                         onError = {
-                            player.showDialog(noticeDialog {
-                                base {
-                                    title {
-                                        error("Fehler beim Kauf!")
-                                    }
-                                    body {
-                                        plainMessage {
-                                            error("Es ist ein Fehler beim Kauf von ")
-                                            variableValue("${amount}x")
-                                            appendSpace()
-                                            append(item)
-                                            error(" für ")
-                                            append(Currency.default().format(price.toBigDecimal()))
-                                            error(" aufgetreten!")
-                                        }
-                                    }
-                                }
-                            })
+                            player.sendText {
+                                appendErrorPrefix()
+                                error(errorMessages.random())
+
+                                appendNewErrorPrefixedLine()
+                                appendSpace()
+                                error("Der Kauf von ")
+                                variableValue("${amount}x")
+                                appendSpace()
+                                append(item)
+                                error(" für ")
+                                append(Currency.default().format(price.toBigDecimal()))
+                                error(" konnte nicht abgeschlossen werden.")
+                            }
+
 
                             player.playSound {
                                 type(BukkitSound.ENTITY_VILLAGER_NO)

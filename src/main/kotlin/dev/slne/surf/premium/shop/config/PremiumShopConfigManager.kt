@@ -1,5 +1,6 @@
 package dev.slne.surf.premium.shop.config
 
+import dev.jorel.commandapi.CommandAPIPaper
 import dev.slne.surf.api.core.config.manager.SpongeConfigManager
 import dev.slne.surf.premium.shop.config.furniture.ConfigFurnitureCategory
 import dev.slne.surf.premium.shop.plugin
@@ -54,6 +55,7 @@ object PremiumShopConfigManager {
                 enabled = category.enabled
                 sortingIndex = category.sortingIndex
                 displayName = category.displayName
+                displayItem = category.displayItem
                 permission = category.permission
                 items = category.items
             }

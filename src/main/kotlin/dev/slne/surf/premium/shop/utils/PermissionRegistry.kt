@@ -34,9 +34,7 @@ object PermissionRegistry : PermissionRegistry() {
         .replace("ü", "ue")
         .replace("ß", "ss")
 
-    fun createCategoryUsePermission(name: String) =
-        create(slug("$FURNITURE_CATEGORY_USE_BASE.$name"))
-
+    fun createCategoryUsePermission(name: String) = slug("$FURNITURE_CATEGORY_USE_BASE.$name")
     fun createFurnitureItemUsePermission(categoryName: String, name: String) =
-        create(slug("$FURNITURE_CATEGORY_USE_BASE.$categoryName.item.$name"))
+        slug("$FURNITURE_CATEGORY_USE_BASE.$categoryName.item.$name")
 }

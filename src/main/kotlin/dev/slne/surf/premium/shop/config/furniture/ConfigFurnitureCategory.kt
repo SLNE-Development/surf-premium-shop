@@ -7,14 +7,12 @@ import net.kyori.adventure.text.Component
 import org.bukkit.inventory.ItemType
 import org.spongepowered.configurate.objectmapping.ConfigSerializable
 import org.spongepowered.configurate.objectmapping.meta.Comment
-import org.spongepowered.configurate.objectmapping.meta.Required
 
 @ConfigSerializable
 data class ConfigFurnitureCategory(
     @Comment("Unique identifier for the category. This is used for permissions and internal references.")
     @NotBlank
-    @Required
-    var id: String,
+    var id: String = "id",
 
     @Comment("Whether this category is enabled and visible in the shop. Set to false to hide the category.")
     var enabled: Boolean = true,
@@ -32,10 +30,5 @@ data class ConfigFurnitureCategory(
     var permission: String = PermissionRegistry.createCategoryUsePermission(id),
 
     @Comment("The items that belong to this category")
-    var items: List<ConfigFurnitureItem> = listOf(
-        ConfigFurnitureItem(
-            id = "example-item",
-            permission = PermissionRegistry.createFurnitureItemUsePermission(id, "example-item"),
-        )
-    )
+    var items: List<ConfigFurnitureItem> = listOf()
 )
