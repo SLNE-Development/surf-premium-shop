@@ -1,15 +1,16 @@
 package dev.slne.surf.premium.shop.command.subcommands.category
 
+import com.github.shynixn.mccoroutine.folia.launch
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.anyExecutor
 import dev.jorel.commandapi.kotlindsl.getValue
 import dev.jorel.commandapi.kotlindsl.subcommand
-import dev.slne.surf.premium.shop.command.subcommands.category.arguments.furnitureCategoryArgument
-import dev.slne.surf.premium.shop.config.PremiumShopConfig
-import dev.slne.surf.premium.shop.furniture.category.FurnitureCategory
-import dev.slne.surf.premium.shop.utils.PermissionRegistry
-import dev.slne.surf.api.core.messages.adventure.clickCallback
 import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.premium.shop.command.subcommands.category.arguments.furnitureCategoryArgument
+import dev.slne.surf.premium.shop.furniture.FurnitureManager
+import dev.slne.surf.premium.shop.furniture.category.FurnitureCategory
+import dev.slne.surf.premium.shop.plugin
+import dev.slne.surf.premium.shop.utils.PermissionRegistry
 import net.kyori.adventure.text.format.TextDecoration
 
 fun CommandAPICommand.categoriesDeleteCommand() = subcommand("delete") {
@@ -29,16 +30,16 @@ fun CommandAPICommand.categoriesDeleteCommand() = subcommand("delete") {
             append {
                 error("HIER", TextDecoration.BOLD)
                 clickCallback { clicker ->
-                    PremiumShopConfig.edit {
-                        furniture.removeCategory(category)
-                    }
+                    plugin.launch {
+                        FurnitureManager.deleteCategory(category)
 
-                    clicker.sendText {
-                        appendSuccessPrefix()
+                        clicker.sendText {
+                            appendSuccessPrefix()
 
-                        success("Die Kategorie ")
-                        append(category)
-                        success(" wurde erfolgreich gelöscht.")
+                            success("Die Kategorie ")
+                            append(category)
+                            success(" wurde erfolgreich gelöscht.")
+                        }
                     }
                 }
             }

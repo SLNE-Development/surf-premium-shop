@@ -2,15 +2,16 @@
 
 package dev.slne.surf.premium.shop.menu
 
-import dev.slne.surf.premium.shop.menu.furniture.FurnitureShopView
-import dev.slne.surf.premium.shop.menu.furniture.furnitureShopView
-import dev.slne.surf.api.paper.builder.buildItem
+import dev.slne.surf.api.paper.builder.buildLore
 import dev.slne.surf.api.paper.builder.displayName
+import dev.slne.surf.api.paper.inventory.framework.dsl.layoutSlot
 import dev.slne.surf.api.paper.inventory.framework.dsl.onItemClick
 import dev.slne.surf.api.paper.inventory.framework.dsl.openForPlayer
+import dev.slne.surf.api.paper.inventory.framework.dsl.withItem
 import dev.slne.surf.api.paper.inventory.framework.view.*
 import dev.slne.surf.api.paper.inventory.framework.view.container.dsl.blockRow
 import dev.slne.surf.api.paper.inventory.framework.view.settings.ViewRows
+import dev.slne.surf.premium.shop.menu.furniture.furnitureShopView
 import org.bukkit.inventory.ItemType
 
 val mainMenu = surfView("PremiumShop") {
@@ -34,11 +35,26 @@ val mainMenu = surfView("PremiumShop") {
     }
 
     onFirstRender {
-        layoutSlot('F', buildItem(ItemType.OAK_SHELF) {
-            displayName(FurnitureShopView.itemDisplayName)
-            lore(FurnitureShopView.itemLore)
-        }).onItemClick {
-            openForPlayer(furnitureShopView)
+        layoutSlot('F') {
+            withItem(ItemType.OAK_SHELF) {
+                displayName {
+                    primary("Furniture Shop")
+                }
+
+                buildLore {
+                    emptyLine()
+                    line {
+                        spacer("Hier kannst du Furniture kaufen,")
+                    }
+                    line {
+                        spacer("mit welcher du deine Base verschönern kannst.")
+                    }
+                }
+            }
+
+            onItemClick {
+                openForPlayer(furnitureShopView)
+            }
         }
     }
 }

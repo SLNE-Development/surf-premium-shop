@@ -2,14 +2,15 @@
 
 package dev.slne.surf.premium.shop.menu.furniture
 
-import com.github.shynixn.mccoroutine.folia.entityDispatcher
 import com.github.shynixn.mccoroutine.folia.launch
-import com.github.shynixn.mccoroutine.folia.regionDispatcher
-import dev.slne.surf.premium.shop.furniture.item.FurnitureItem
-import dev.slne.surf.premium.shop.plugin
+import dev.slne.surf.api.core.messages.adventure.playSound
 import dev.slne.surf.api.paper.builder.buildLore
 import dev.slne.surf.api.paper.builder.displayName
+import dev.slne.surf.api.paper.dialog.base
+import dev.slne.surf.api.paper.dialog.noticeDialog
+import dev.slne.surf.api.paper.inventory.framework.dsl.layoutSlot
 import dev.slne.surf.api.paper.inventory.framework.dsl.onItemClick
+import dev.slne.surf.api.paper.inventory.framework.dsl.onItemRender
 import dev.slne.surf.api.paper.inventory.framework.view.*
 import dev.slne.surf.api.paper.inventory.framework.view.container.dsl.blockRow
 import dev.slne.surf.api.paper.inventory.framework.view.icon.ViewIconColor
@@ -20,22 +21,15 @@ import dev.slne.surf.api.paper.inventory.framework.view.state.get
 import dev.slne.surf.api.paper.inventory.framework.view.state.initialState
 import dev.slne.surf.api.paper.inventory.framework.view.state.mutableState
 import dev.slne.surf.api.paper.inventory.framework.view.state.set
-import dev.slne.surf.api.core.messages.adventure.playSound
-import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.util.BukkitSound
+import dev.slne.surf.premium.shop.furniture.item.FurnitureItem
+import dev.slne.surf.premium.shop.manager.PremiumShopManager
+import dev.slne.surf.premium.shop.plugin
 import dev.slne.surf.transaction.api.currency.Currency
-import dev.slne.surf.transaction.api.transaction.TransactionResult
-import dev.slne.surf.transaction.api.transaction.data.TransactionData
-import dev.slne.surf.transaction.api.user.transactionUser
-import io.papermc.paper.datacomponent.DataComponentTypes
-import kotlinx.coroutines.withContext
+import io.papermc.paper.registry.data.dialog.DialogBase
 import net.kyori.adventure.sound.Sound
-import org.bukkit.entity.EntityType
-import org.bukkit.entity.Item
 import org.bukkit.entity.Player
-import org.bukkit.event.entity.CreatureSpawnEvent
-import org.bukkit.inventory.ItemStack
 import kotlin.math.max
-import org.bukkit.Sound as BukkitSound
 
 val furnitureItemBuyView = surfView("KAUFEN") {
     val itemStateHolder = initialState<FurnitureItem>()
@@ -60,191 +54,201 @@ val furnitureItemBuyView = surfView("KAUFEN") {
     onFirstRender {
         val item = itemStateHolder[this]
 
-        layoutSlot(
-            'N', buildAmountItem(
-                ViewIconType.MINUS,
-                -1,
-            )
-        ).onItemClick {
-            amountStateHolder[this] = max(amountStateHolder[this].dec(), 1)
-            player.playClickSound()
-            update()
-        }
+        layoutSlot('N') {
+            withItem(buildAmountItem(ViewIconType.MINUS, -1))
 
-        layoutSlot(
-            'M', buildAmountItem(
-                ViewIconType.MINUS,
-                -10,
-            )
-        ).onItemClick {
-            amountStateHolder[this] = max(amountStateHolder[this] - 10, 1)
-            player.playClickSound()
-            update()
-        }
-
-        layoutSlot('I').onRender {
-            val amountState = amountStateHolder[this]
-
-            it.item = viewIcon(ViewIconType.QUESTION, ViewIconColor.BLUE) {
-                displayName {
-                    primary("Anzahl: ")
-                    variableValue(amountState)
-                }
-
-                buildLore {
-                    emptyLine()
-                    line {
-                        spacer("Bitte wähle aus, wie oft du ")
-                        append(item)
-                        spacer(" kaufen möchtest.")
-                    }
-                }
+            onItemClick {
+                amountStateHolder[this] = max(amountStateHolder[this].dec(), 1)
+                player.playClickSound()
+                update()
             }
         }
 
-        layoutSlot(
-            'P', buildAmountItem(
-                ViewIconType.PLUS,
-                1,
-            )
-        ).onItemClick {
-            amountStateHolder[this] = amountStateHolder[this].inc()
-            player.playClickSound()
-            update()
-        }
+        layoutSlot('M') {
+            withItem(buildAmountItem(ViewIconType.MINUS, -10))
 
-        layoutSlot(
-            'O', buildAmountItem(
-                ViewIconType.PLUS,
-                10,
-            )
-        ).onItemClick {
-            amountStateHolder[this] = amountStateHolder[this] + 10
-            player.playClickSound()
-            update()
-        }
-
-        layoutSlot('B').onRender {
-            val amountState = amountStateHolder[this]
-            val price = amountState * item.price
-
-            it.item = viewIcon(ViewIconType.CHECK, ViewIconColor.GREEN) {
-                displayName {
-                    primary("Kaufen")
-                }
-
-                buildLore {
-                    emptyLine()
-                    line {
-                        spacer("Klicke, um ")
-                        variableValue("${amountState}x")
-                        appendSpace()
-                        append(item)
-                        spacer(" für ")
-                        append(Currency.default().format(price.toBigDecimal()))
-                        spacer(" zu kaufen")
-                    }
-                }
+            onItemClick {
+                amountStateHolder[this] = max(amountStateHolder[this] - 10, 1)
+                player.playClickSound()
+                update()
             }
-        }.onItemClick {
-            val amount = amountStateHolder[this]
-            val price = item.price * amount
+        }
 
-            plugin.launch {
-                val result = player.transactionUser().withdraw(
-                    amount = price.toBigDecimal(),
-                    currency = Currency.default(),
-                    additionalData = arrayOf(
-                        TransactionData.of(
-                            "premium-furniture-item",
-                            "${amount}x ${item.name} for ${item.price}"
-                        )
-                    )
-                )
+        layoutSlot('I') {
+            onItemRender {
+                val amount = amountStateHolder[this]
 
-                if (result.success) {
-                    withContext(plugin.entityDispatcher(player)) {
-                        closeForPlayer()
+                this.item = viewIcon(ViewIconType.QUESTION, ViewIconColor.BLUE) {
+                    displayName {
+                        primary("Anzahl: ")
+                        variableValue(amount)
                     }
 
-                    val stacks = splitIntoMultipleItemStacks(item.itemStack, amount)
-                    val notAdded = stacks.flatMap { stack ->
-                        player.inventory.addItem(stack).values
-                    }
-
-                    withContext(plugin.regionDispatcher(player.location)) {
-                        notAdded.forEach { itemStack ->
-                            player.world.spawnEntity(
-                                player.location,
-                                EntityType.ITEM,
-                                CreatureSpawnEvent.SpawnReason.CUSTOM
-                            ) { item ->
-                                require(item is Item)
-
-                                item.itemStack = itemStack
-                                item.owner = player.uniqueId
-                                item.pickupDelay = 0
-
-                                // 5 minutes - 30 seconds so it despawns after 30 seconds
-                                item.ticksLived = 6000 - 600
-                            }
+                    buildLore {
+                        emptyLine()
+                        line {
+                            spacer("Bitte wähle aus, wie oft du ")
+                            append(item)
+                            spacer(" kaufen möchtest.")
                         }
                     }
+                }
+            }
+        }
 
-                    player.playSound(true) {
-                        type(BukkitSound.ENTITY_PLAYER_LEVELUP)
-                        volume(.5f)
-                        source(Sound.Source.PLAYER)
+        layoutSlot('P') {
+            withItem(buildAmountItem(ViewIconType.PLUS, 1))
+
+            onItemClick {
+                amountStateHolder[this] = amountStateHolder[this].inc()
+                player.playClickSound()
+                update()
+            }
+        }
+
+        layoutSlot('O') {
+            withItem(buildAmountItem(ViewIconType.PLUS, 10))
+
+            onItemClick {
+                amountStateHolder[this] = amountStateHolder[this] + 10
+                player.playClickSound()
+                update()
+            }
+        }
+
+        layoutSlot('B') {
+            onItemRender {
+                val amount = amountStateHolder[this]
+                val price = amount * item.price
+
+                this.item = viewIcon(ViewIconType.CHECK, ViewIconColor.GREEN) {
+                    displayName {
+                        primary("Kaufen")
                     }
 
-                    player.sendText {
-                        appendSuccessPrefix()
-                        success("Du hast ")
-                        variableValue("${amount}x")
-                        append(item)
-                        success(" für ")
-                        append(Currency.default().format(price.toBigDecimal()))
-                        success(" gekauft!")
+                    buildLore {
+                        emptyLine()
+                        line {
+                            spacer("Klicke, um ")
+                            variableValue("${amount}x")
+                            appendSpace()
+                            append(item)
+                            spacer(" für ")
+                            append(Currency.default().format(price.toBigDecimal()))
+                            spacer(" zu kaufen")
+                        }
                     }
-                } else if (result is TransactionResult.ReceiverInsufficientFunds) {
-                    player.playSound {
-                        type(BukkitSound.ENTITY_VILLAGER_NO)
-                        volume(.5f)
-                        source(Sound.Source.PLAYER)
-                    }
+                }
+            }
 
-                    player.sendText {
-                        appendErrorPrefix()
-                        error("Du hast nicht genügend ")
-                        append(Currency.default().displayName)
-                        error(" um ")
-                        variableValue("${amount}x")
-                        appendSpace()
-                        append(item)
-                        success(" für ")
-                        append(Currency.default().format(price.toBigDecimal()))
-                        error(" zu kaufen!")
+            onItemClick {
+                val amount = amountStateHolder[this]
+                val price = item.price * amount
+
+                closeForPlayer()
+
+                player.showDialog(
+                    noticeDialog {
+                        base {
+                            afterAction(DialogBase.DialogAfterAction.WAIT_FOR_RESPONSE)
+                            preventClosingWithEscape()
+                            title { }
+                        }
                     }
+                )
+                player.closeDialog()
+
+                plugin.launch {
+                    PremiumShopManager.buy(
+                        player,
+                        amount,
+                        item,
+                        onSuccess = {
+                            player.showDialog(noticeDialog {
+                                base {
+                                    title {
+                                        success("Erfolgreich gekauft!")
+                                    }
+                                    body {
+                                        plainMessage {
+                                            success("Du hast ")
+                                            variableValue("${amount}x")
+                                            append(item)
+                                            success(" für ")
+                                            append(Currency.default().format(price.toBigDecimal()))
+                                            success(" gekauft!")
+                                        }
+                                    }
+                                }
+                            })
+
+                            player.playSound(true) {
+                                type(BukkitSound.ENTITY_PLAYER_LEVELUP)
+                                volume(.5f)
+                                source(Sound.Source.PLAYER)
+                            }
+                        },
+                        onInsufficientFunds = {
+                            player.showDialog(noticeDialog {
+                                base {
+                                    title {
+                                        warning("Nicht genügend Geld!")
+                                    }
+                                    body {
+                                        plainMessage {
+                                            warning("Du hast nicht genügend ")
+                                            append(Currency.default().displayName)
+                                            warning(" um ")
+                                            variableValue("${amount}x")
+                                            appendSpace()
+                                            append(item)
+                                            warning(" für ")
+                                            append(Currency.default().format(price.toBigDecimal()))
+                                            warning(" zu kaufen!")
+                                        }
+                                    }
+                                }
+                            })
+
+                            player.playSound {
+                                type(BukkitSound.ENTITY_VILLAGER_NO)
+                                volume(.5f)
+                                source(Sound.Source.PLAYER)
+                            }
+                        },
+                        onError = {
+                            player.showDialog(noticeDialog {
+                                base {
+                                    title {
+                                        error("Fehler beim Kauf!")
+                                    }
+                                    body {
+                                        plainMessage {
+                                            error("Es ist ein Fehler beim Kauf von ")
+                                            variableValue("${amount}x")
+                                            appendSpace()
+                                            append(item)
+                                            error(" für ")
+                                            append(Currency.default().format(price.toBigDecimal()))
+                                            error(" aufgetreten!")
+                                        }
+                                    }
+                                }
+                            })
+
+                            player.playSound {
+                                type(BukkitSound.ENTITY_VILLAGER_NO)
+                                volume(.5f)
+                                source(Sound.Source.PLAYER)
+                            }
+                        }
+                    )
                 }
             }
         }
     }
 }
 
-private fun splitIntoMultipleItemStacks(itemStack: ItemStack, amount: Int): List<ItemStack> {
-    val maxStackSize = itemStack.getData(DataComponentTypes.MAX_STACK_SIZE) ?: 1
-    val neededStacks = (amount + maxStackSize - 1) / maxStackSize
-
-    return List(neededStacks) { index ->
-        val stackAmount = if (index == neededStacks - 1) {
-            amount - (maxStackSize * index)
-        } else {
-            maxStackSize
-        }
-
-        itemStack.clone().asQuantity(stackAmount)
-    }
-}
 
 private fun buildAmountItem(
     type: ViewIconType,

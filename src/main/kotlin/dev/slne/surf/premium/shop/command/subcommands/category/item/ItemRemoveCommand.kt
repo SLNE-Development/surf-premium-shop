@@ -1,53 +1,28 @@
 package dev.slne.surf.premium.shop.command.subcommands.category.item
 
-import dev.jorel.commandapi.CommandAPI
 import dev.jorel.commandapi.CommandAPICommand
-import dev.jorel.commandapi.arguments.ArgumentSuggestions
-import dev.jorel.commandapi.kotlindsl.anyExecutor
 import dev.jorel.commandapi.kotlindsl.getValue
-import dev.jorel.commandapi.kotlindsl.stringArgument
 import dev.jorel.commandapi.kotlindsl.subcommand
-import dev.slne.surf.premium.shop.command.subcommands.category.arguments.furnitureCategoryArgument
-import dev.slne.surf.premium.shop.config.PremiumShopConfig
-import dev.slne.surf.premium.shop.config.config
-import dev.slne.surf.premium.shop.furniture.category.FurnitureCategory
-import dev.slne.surf.premium.shop.utils.PermissionRegistry
 import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.command.executors.anyExecutorSuspend
+import dev.slne.surf.premium.shop.command.subcommands.category.arguments.furnitureCategoryArgument
+import dev.slne.surf.premium.shop.command.subcommands.category.arguments.furnitureItemArgument
+import dev.slne.surf.premium.shop.furniture.FurnitureManager
+import dev.slne.surf.premium.shop.furniture.category.FurnitureCategory
+import dev.slne.surf.premium.shop.furniture.item.FurnitureItem
+import dev.slne.surf.premium.shop.utils.PermissionRegistry
 
 fun CommandAPICommand.itemRemoveCommand() = subcommand("remove") {
     withPermission(PermissionRegistry.COMMAND_FURNITURE_CATEGORY_REMOVE_ITEM)
 
     furnitureCategoryArgument("category")
-    stringArgument("item") {
-        replaceSuggestions(ArgumentSuggestions.stringCollection { info ->
-            val category = info.previousArgs().getUnchecked<FurnitureCategory>("category")
-                ?: throw CommandAPI.failWithString("Category not set.")
+    furnitureItemArgument("item", "category")
 
-            category.items.map { it.name }
-        })
-    }
-
-    anyExecutor { sender, arguments ->
+    anyExecutorSuspend { sender, arguments ->
         val category: FurnitureCategory by arguments
-        val itemName: String by arguments
+        val item: FurnitureItem by arguments
 
-        val item = config.furniture.itemByName(category.name, itemName) ?: run {
-            sender.sendText {
-                appendErrorPrefix()
-
-                error("Das Item ")
-                variableValue(itemName)
-                error(" wurde in der Kategorie ")
-                append(category)
-                error(" nicht gefunden.")
-            }
-
-            return@anyExecutor
-        }
-
-        PremiumShopConfig.edit {
-            furniture.items.remove(item)
-        }
+        FurnitureManager.removeItemFromCategory(category, item)
 
         sender.sendText {
             appendSuccessPrefix()

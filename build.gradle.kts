@@ -13,7 +13,6 @@ dependencies {
 
 surfPaperPluginApi {
     mainClass("dev.slne.surf.premium.shop.PremiumShop")
-    foliaSupported(true)
 
     serverDependencies {
         registerRequired("surf-transaction-paper")

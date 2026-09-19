@@ -2,64 +2,60 @@ package dev.slne.surf.premium.shop.command.subcommands.category
 
 import dev.jorel.commandapi.CommandAPICommand
 import dev.jorel.commandapi.kotlindsl.*
-import dev.slne.surf.premium.shop.config.PremiumShopConfig
-import dev.slne.surf.premium.shop.config.config
+import dev.slne.surf.api.core.messages.adventure.sendText
+import dev.slne.surf.api.paper.command.args.miniMessageArgument
+import dev.slne.surf.api.paper.command.executors.playerExecutorSuspend
+import dev.slne.surf.premium.shop.furniture.FurnitureManager
 import dev.slne.surf.premium.shop.furniture.category.FurnitureCategory
 import dev.slne.surf.premium.shop.utils.PermissionRegistry
-import dev.slne.surf.api.paper.command.args.miniMessageArgument
-import dev.slne.surf.api.core.messages.adventure.sendText
 import net.kyori.adventure.text.Component
-import org.bukkit.Material
+import org.bukkit.Registry
 
 fun CommandAPICommand.categoriesCreateCommand() = subcommand("create") {
     withPermission(PermissionRegistry.COMMAND_FURNITURE_CATEGORY_CREATE)
 
-    stringArgument("name")
+    stringArgument("id")
     miniMessageArgument("displayName")
     booleanArgument("enabled", optional = true)
 
-    playerExecutor { player, arguments ->
-        val name: String by arguments
+    playerExecutorSuspend { player, arguments ->
+        val id: String by arguments
         val displayName: Component by arguments
         val enabled = arguments.getOrDefaultUnchecked("enabled", true)
 
-        if (config.furniture.categoryByName(name) != null) {
+        if (FurnitureManager.categoryById(id) != null) {
             player.sendText {
                 appendErrorPrefix()
 
-                error("Es existiert bereits eine Kategorie mit dem Namen ")
-                variableValue(name)
+                error("Es existiert bereits eine Kategorie mit der ID ")
+                variableValue(id)
                 error(".")
             }
 
-            return@playerExecutor
+            return@playerExecutorSuspend
         }
 
         val displayItem = player.inventory.itemInMainHand
 
-        if (displayItem.type == Material.AIR) {
+        if (displayItem.isEmpty) {
             player.sendText {
                 appendErrorPrefix()
-
-                error("Du musst ein Item in deiner Main-Hand halten, welches als Displayitem für die Kategorie verwendet wird.")
+                error("Du musst ein Item in deiner Hand halten, welches als Display-Item für die Kategorie verwendet wird.")
             }
 
-            return@playerExecutor
+            return@playerExecutorSuspend
         }
-
-        val latestSortingIndex = config.furniture.categories.maxOfOrNull { it.sortingIndex } ?: -1
 
         val category = FurnitureCategory(
-            name = name,
+            id = id,
             displayName = displayName,
-            displayItemKey = displayItem.type.key().asString(),
+            displayItem = Registry.ITEM.getOrThrow(displayItem.type.key()),
             enabled = enabled,
-            sortingIndex = latestSortingIndex + 1
+            sortingIndex = 0,
+            permission = PermissionRegistry.createCategoryUsePermission(id),
         )
 
-        PremiumShopConfig.edit {
-            furniture.addCategory(category)
-        }
+        FurnitureManager.registerCategory(category)
 
         player.sendText {
             appendSuccessPrefix()
