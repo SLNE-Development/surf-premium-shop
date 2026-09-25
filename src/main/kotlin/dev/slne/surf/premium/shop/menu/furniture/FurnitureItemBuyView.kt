@@ -109,8 +109,9 @@ val furnitureItemBuyView = surfView("Kaufen") {
         layoutSlot('I') {
             onItemRender {
                 val amount = amountStateHolder[this]
+                val item = itemStateHolder[this]
 
-                this.item = viewIcon(ViewIconType.QUESTION, ViewIconColor.BLUE) {
+                this.item = item.itemStackTemplate.apply {
                     displayName {
                         primary("Anzahl: ")
                         variableValue(amount)
