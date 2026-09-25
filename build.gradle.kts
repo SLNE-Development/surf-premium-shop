@@ -9,6 +9,7 @@ version = findProperty("version") as String
 
 dependencies {
     compileOnly(libs.surf.transaction.api)
+    compileOnly(libs.surf.npc.api)
 }
 
 surfPaperPluginApi {
@@ -16,5 +17,6 @@ surfPaperPluginApi {
 
     serverDependencies {
         registerRequired("surf-transaction-paper")
+        registerRequired("surf-npc-paper")
     }
 }

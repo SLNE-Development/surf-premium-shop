@@ -10,6 +10,10 @@ object PermissionRegistry : PermissionRegistry() {
     val COMMAND_RELOAD = create("$COMMAND_PREFIX.reload")
     val COMMAND_OPEN = create("$COMMAND_PREFIX.open")
 
+    private const val COMMAND_NPC_PREFIX = "$COMMAND_PREFIX.npc"
+    val COMMAND_NPC_BASE = create("$COMMAND_NPC_PREFIX.base")
+    val COMMAND_NPC_CREATE = create("$COMMAND_NPC_PREFIX.create")
+
     private const val COMMAND_FURNITURE_PREFIX = "$COMMAND_PREFIX.furniture"
     val COMMAND_FURNITURE_BASE = create("$COMMAND_FURNITURE_PREFIX.base")
 

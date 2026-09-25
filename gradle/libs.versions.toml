@@ -1,5 +1,7 @@
 [versions]
 surf-transaction-api = "+"
+surf-npc-api = "+"
 
 [libraries]
 surf-transaction-api = { module = "dev.slne.surf.transaction:surf-transaction-api", version.ref = "surf-transaction-api" }
+surf-npc-api = { module = "dev.slne.surf.npc:surf-npc-api", version.ref = "surf-npc-api" }
