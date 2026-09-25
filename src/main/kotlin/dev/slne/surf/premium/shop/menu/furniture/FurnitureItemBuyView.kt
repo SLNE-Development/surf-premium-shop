@@ -63,7 +63,7 @@ private val errorMessages = listOf(
     "Da hat es irgendwo geknirscht. Dein Kauf wurde vorsichtshalber nicht abgeschlossen."
 )
 
-val furnitureItemBuyView = surfView("KAUFEN") {
+val furnitureItemBuyView = surfView("Kaufen") {
     val itemStateHolder = initialState<FurnitureItem>()
     val amountStateHolder = mutableState(1)
 
